@@ -12,6 +12,6 @@ def get_console_handler():
 
 def get_logger(logger_name):
     logger = logging.getLogger(logger_name)
-    coloredlogs.install(fmt="[%(levelname)s] [%(asctime)s] — %(name)s: %(message)s", level='DEBUG', logger=logger)
+    coloredlogs.install(fmt="[%(asctime)s] [%(levelname)s] — %(name)s: %(message)s", level='DEBUG', logger=logger)
 
     return logger

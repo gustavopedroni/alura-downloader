@@ -15,7 +15,7 @@ class AluraAuth:
         self.kwargs = kwargs
 
     def login(self):
-        logger.info('Login: Executing')
+        logger.info('Authenticating on Alura')
 
         try:
 
@@ -32,8 +32,8 @@ class AluraAuth:
 
             self.driver.find_element_by_class_name('btn-login').click()
 
-            logger.info('Login: Successful')
+            logger.info('Successful Authenticate')
 
         except Exception as e:
             logger.error(e)
-            logger.error('Login: Error')
+            logger.error('Error trying authenticating')

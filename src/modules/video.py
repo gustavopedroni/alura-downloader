@@ -7,7 +7,7 @@ import requests
 
 from ..helpers.path import folder, file
 from ..helpers.text import file_folder_name
-from ..helpers.encoder import ts_to_mp4
+from ..helpers.encoder import Encoder
 from ..helpers.logging import get_logger
 
 logger = get_logger('Video')
@@ -15,20 +15,19 @@ logger = get_logger('Video')
 
 class VideoDownloader:
 
-    def __init__(self, driver, *args, **kwargs):
+    def __init__(self, output, driver, *args, **kwargs):
         self.driver = driver
+        self.output = output if output else 'dist'
 
         self.args = args
         self.kwargs = kwargs
 
-        self.source = None
-
-        self.playlist_name = 'undefined-playlist'
         self.video_name = 'undefined-video'
-        self.base_folder = ''
+        self.list_file = ''
 
-    def set_base_folder(self, base_folder):
-        self.base_folder = base_folder
+        self.tmp_folder = 'tmp'
+
+        self.source = lambda seg: re.sub(r'seg+-\w-v1', seg, self.driver.last_request.path)
 
     def wait_video_start(self, timeout=30):
 
@@ -42,15 +41,7 @@ class VideoDownloader:
             else:
                 time.sleep(0.2)
 
-    def get_video(self, url):
-        logger.info('Get Video: Waiting Page')
-        self.driver.get(url)
-
-        time.sleep(2)
-
-        self.playlist_name = file_folder_name(
-            self.driver.find_element_by_class_name('task-menu-header-info-title-text').text
-        )
+    def set_video_details(self):
 
         video_name = self.driver.find_element_by_class_name('task-body-header-title-text').text
         video_index = self.driver.find_element_by_class_name('task-body-header-title') \
@@ -58,20 +49,24 @@ class VideoDownloader:
 
         self.video_name = file_folder_name(f'{video_index} - {video_name}')
 
-        self.driver.find_element_by_class_name('vjs-big-play-button').click()
-        logger.info('Get Video: Waiting Video Start')
-        self.wait_video_start()
-        logger.info('Get Video: Video Starts!')
-        self.driver.find_element_by_class_name('vjs-play-control').click()
-        logger.info('Get Video: Pause Video')
-        # seg+-\w-v1
+    def open_video(self, url):
+        logger.info('Loading Page')
+        self.driver.get(url)
+        time.sleep(2)
 
-        self.source = lambda seg: re.sub(r'seg+-\w-v1', seg, self.driver.last_request.path)
+        self.set_video_details()
+
+        self.driver.find_element_by_class_name('vjs-big-play-button').click()
+        logger.info('Waiting Video Start')
+        self.wait_video_start()
+        logger.info('Video Starts!')
+        self.driver.find_element_by_class_name('vjs-play-control').click()
+        logger.info('Video Paused')
 
     def download_ts(self):
 
-        folder(self.playlist_name)
-        ts_folder = folder(os.path.join(self.playlist_name, 'ts'))
+        folder(self.tmp_folder)
+        ts_folder = folder(os.path.join(self.tmp_folder, 'ts'))
 
         count = 1
 
@@ -83,7 +78,10 @@ class VideoDownloader:
 
             try:
 
+                logger.debug(f'Downloading Part {count}')
+
                 url = self.source(f'seg-{count}-v1')
+                logger.debug(f'Downloading URL: {url}')
 
                 r = requests.get(url)
                 r.raise_for_status()
@@ -95,8 +93,6 @@ class VideoDownloader:
                 with open(file_name, 'wb') as f:
                     f.write(r.content)
 
-                logger.info(f'Downloaded URL: {url}')
-
                 count += 1
 
             except requests.exceptions.HTTPError:
@@ -106,7 +102,7 @@ class VideoDownloader:
 
     def create_list_file(self, video_list):
 
-        list_name = f'{self.playlist_name}/list.txt'
+        list_name = f'{self.tmp_folder}/list.txt'
 
         with open(list_name, 'wb') as f:
             for i in video_list:
@@ -114,33 +110,55 @@ class VideoDownloader:
 
         return list_name
 
-    def to_mp4(self, ts_list_file):
+    def check_output_folder(self):
 
-        output = os.path.abspath(f'{self.playlist_name}/{self.video_name}')
-        ts_to_mp4(ts_list_file, output)
+        if self.output:
+            folder(self.output)
 
-    def remove_ts(self):
-        shutil.rmtree(os.path.abspath(os.path.join(self.playlist_name, 'ts')))
-        ts_file = os.path.abspath(f'{self.playlist_name}/{self.video_name}.ts')
+    def encode_video(self):
+
+        self.check_output_folder()
+
+        output = f'{self.output}/{self.video_name}'
+        Encoder().ts_to_mp4(self.list_file, output)
+
+    def clean_chunks(self):
+
+        logger.info('Clearing chunks')
+        logger.debug('Removing TMP Folder')
+
+        shutil.rmtree(self.tmp_folder)
+
+        logger.debug('Removed TMP Folder')
+
+        logger.debug('Removing TS File')
+        ts_file = os.path.abspath(f'{self.output}/{self.video_name}.ts')
         os.unlink(ts_file)
+        logger.debug('Removed TS File')
 
-    def remove_list(self):
-        list_name = f'{self.playlist_name}/list.txt'
-        os.unlink(list_name)
+    def download_video(self):
+
+        ts_list = self.download_ts()
+        self.list_file = self.create_list_file(ts_list)
 
     def download(self, url):
 
         start_time = time.time()
 
-        self.get_video(url)
-        ts_list = self.download_ts()
-        ts_list_file = self.create_list_file(ts_list)
+        self.open_video(url)
 
-        self.to_mp4(ts_list_file)
+        download_start = time.time()
+        self.download_video()
+        download_end = time.time()
 
-        self.remove_ts()
-        self.remove_list()
+        converting_start = time.time()
+        self.encode_video()
+        converting_end = time.time()
 
-        timed = time.time() - start_time
+        self.clean_chunks()
 
-        logger.info("Download Video in: %s seconds" % timed)
+        end_time = time.time()
+
+        logger.info("Converted Video in: %s seconds" % (download_end - download_start))
+        logger.info("Download Video in: %s seconds" % (converting_end - converting_start))
+        logger.info("Downloading & Converting Video in: %s seconds" % (end_time - start_time))

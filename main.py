@@ -18,10 +18,9 @@ if __name__ == '__main__':
     app = AluraDownloader(output=options.output)
     opts = options.__dict__
 
-    has_options = len(list(filter(None, opts.values())))
-
-    if not has_options:
-        app.start(video_url=args[0])
+    if args[0]:
+        del opts['video_url']
+        app.start(video_url=args[0], **opts)
 
     else:
         app.start(**opts)

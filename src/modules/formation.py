@@ -38,6 +38,8 @@ class FormationDownloader:
 
     def extract_courses(self):
 
+        self.courses = []
+
         items = self.driver.find_elements_by_class_name('learning-content__link')
 
         for i in items:
@@ -67,8 +69,6 @@ class FormationDownloader:
         self.output = os.path.join(self.output, self.formation_name)
 
         self.set_formation_instance()
-
-        from IPython import embed; embed()
 
         for course_url in self.courses:
             self.course.download(course_url)

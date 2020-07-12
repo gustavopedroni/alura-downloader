@@ -39,6 +39,8 @@ class CourseDownloader:
 
     def extract_lessons(self):
 
+        self.lessons = []
+
         menu = self.driver.find_element_by_class_name('courseSectionList')
         items = menu.find_elements_by_class_name('courseSection-listItem')
 

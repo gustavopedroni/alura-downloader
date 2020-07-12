@@ -40,6 +40,8 @@ class LessonDownloader:
 
     def extract_videos(self):
 
+        self.videos = []
+
         menu = self.driver.find_element_by_class_name('task-menu-nav-list')
         items = menu.find_elements_by_class_name('task-menu-nav-item')
 

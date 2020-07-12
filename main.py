@@ -32,3 +32,6 @@ if __name__ == '__main__':
 
     except (Exception, KeyboardInterrupt):
         app.chrome.quit()
+
+    finally:
+        app.show_errors()

@@ -6,6 +6,7 @@ import time
 
 import aiohttp
 
+from .base import BaseModule
 from ..helpers.encoder import Encoder
 from ..helpers.logging import get_logger
 from ..helpers.path import folder, file
@@ -14,9 +15,11 @@ from ..helpers.text import file_folder_name
 logger = get_logger('Video')
 
 
-class VideoDownloader:
+class VideoDownloader(BaseModule):
 
     def __init__(self, output, driver, *args, **kwargs):
+        BaseModule.__init__(self, *args, **kwargs)
+
         self.driver = driver
         self.output = output if output else 'dist'
 
@@ -227,3 +230,5 @@ class VideoDownloader:
 
         except Exception as error:
             logger.error(error)
+
+            self.register_error(url)

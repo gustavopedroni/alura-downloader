@@ -1,6 +1,7 @@
 import logging
-import coloredlogs
 import sys
+
+import coloredlogs
 
 FORMATTER = logging.Formatter()
 

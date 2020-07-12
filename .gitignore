@@ -175,3 +175,6 @@ About
 .idea
 .vscode
 .vs
+
+tmp
+dist

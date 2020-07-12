@@ -3,7 +3,7 @@ import os
 
 def folder(f):
     if not os.path.isdir(f):
-        os.mkdir(os.path.join(os.path.abspath('./'), f))
+        os.makedirs(f)
 
     return f
 

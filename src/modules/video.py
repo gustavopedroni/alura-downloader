@@ -1,14 +1,14 @@
 import os
 import re
-import time
 import shutil
+import time
 
 import requests
 
-from ..helpers.path import folder, file
-from ..helpers.text import file_folder_name
 from ..helpers.encoder import Encoder
 from ..helpers.logging import get_logger
+from ..helpers.path import folder, file
+from ..helpers.text import file_folder_name
 
 logger = get_logger('Video')
 
@@ -27,7 +27,8 @@ class VideoDownloader:
 
         self.tmp_folder = 'tmp'
 
-        self.source = lambda seg: re.sub(r'seg+-\w-v1', seg, self.driver.last_request.path)
+        self.source_url = ''
+        self.source = lambda seg: re.sub(r'seg+-\w-v1', seg, self.source_url)
 
     def wait_video_start(self, timeout=30):
 
@@ -37,7 +38,8 @@ class VideoDownloader:
             request = self.driver.last_request
 
             if request is not None and request.path.find('.ts') > 0:
-                return
+                self.source_url = request.path
+                break
             else:
                 time.sleep(0.2)
 
@@ -51,8 +53,10 @@ class VideoDownloader:
 
     def open_video(self, url):
         logger.info('Loading Page')
-        self.driver.get(url)
-        time.sleep(2)
+
+        if self.driver.current_url != url:
+            self.driver.get(url)
+            time.sleep(2)
 
         self.set_video_details()
 
@@ -78,7 +82,7 @@ class VideoDownloader:
 
             try:
 
-                logger.debug(f'Downloading Part {count}')
+                logger.info(f'Downloading Part {count}')
 
                 url = self.source(f'seg-{count}-v1')
                 logger.debug(f'Downloading URL: {url}')
@@ -159,6 +163,6 @@ class VideoDownloader:
 
         end_time = time.time()
 
-        logger.info("Converted Video in: %s seconds" % (download_end - download_start))
-        logger.info("Download Video in: %s seconds" % (converting_end - converting_start))
+        logger.info("Download Video in: %s seconds" % (download_end - download_start))
+        logger.info("Converted Video in: %s seconds" % (converting_end - converting_start))
         logger.info("Downloading & Converting Video in: %s seconds" % (end_time - start_time))

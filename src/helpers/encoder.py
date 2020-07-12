@@ -17,13 +17,7 @@ class Encoder:
         logger.info('Starting Conversion')
         file_list = os.path.abspath(file_list)
 
-        command = f'ffmpeg -f concat -safe 0 -i "{file_list}" -c copy "{output}.ts"'
-
-        logger.info('Aggregating Videos')
-        self.run_command(command)
-        logger.info('Videos Aggregated')
-        command = f'ffmpeg -i "{output}.ts" -acodec copy -vcodec copy "{output}.mp4"'
-
+        command = f'ffmpeg -f concat -safe 0 -i "{file_list}" -acodec copy -vcodec copy "{output}.mp4"'
         logger.info('Converting Video to MP4')
         self.run_command(command)
         logger.info('Converted Video to MP4')

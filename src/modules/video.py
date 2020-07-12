@@ -48,6 +48,19 @@ class VideoDownloader:
             except Exception:
                 time.sleep(0.2)
 
+    def different_video(self, request):
+
+        request_search = re.search(r'alura/(.*?)/', request)
+        source_search = re.search(r'alura/(.*?)/', self.source_url)
+
+        request_video_name = request_search.group(1) if request_search else ''
+        source_video_name = source_search.group(1) if source_search else ''
+
+        if request_video_name != source_video_name:
+            return True
+
+        return False
+
     def wait_video_start(self, timeout=30):
 
         start = time.time()
@@ -55,9 +68,10 @@ class VideoDownloader:
         while time.time() - start < timeout:
             request = self.driver.last_request
 
-            if request is not None and request.path.find('.ts') > 0:
+            if request is not None and request.path.find('.ts') > 0 and self.different_video(request.path):
                 self.source_url = request.path
                 break
+
             else:
                 time.sleep(0.2)
 
@@ -175,11 +189,6 @@ class VideoDownloader:
         shutil.rmtree(self.tmp_folder)
 
         logger.debug('Removed TMP Folder')
-
-        logger.debug('Removing TS File')
-        ts_file = os.path.abspath(f'{self.output}/{self.video_name}.ts')
-        os.unlink(ts_file)
-        logger.debug('Removed TS File')
 
     def download_video(self):
 

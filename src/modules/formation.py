@@ -86,10 +86,12 @@ class FormationDownloader:
         formation_list = os.path.abspath(formation_list)
         logger.info(f'Starting formation list from: {formation_list}')
 
-        with open(formation_list, 'r') as content_file:
-            content = content_file.readlines()
+        lines = open(formation_list, 'r').readlines()
 
-        content = [i.replace('\n', '') for i in content]
+        while len(lines) > 0:
 
-        for formation in content:
-            self.download(formation)
+            url = lines[0].replace('\n', '')
+            self.download(url)
+
+            lines = lines[1::]
+            open(formation_list, 'w').writelines(lines)

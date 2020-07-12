@@ -21,7 +21,7 @@
  
  ###### OBS: All videos are downloaded in .MP4
  
- ```
+```
  ☤ Usage
  $ python main.py
  Usage: python [OPTIONS] video_url

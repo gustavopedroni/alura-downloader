@@ -30,8 +30,8 @@ class CourseDownloader:
         self.course_name = file_folder_name(course_name)
 
     def open_course(self, url):
-        logger.info('Loading Page')
 
+        logger.info(f'Loading Page {url}')
         self.driver.get(url)
         time.sleep(2)
 
@@ -66,6 +66,7 @@ class CourseDownloader:
         self.extract_lessons()
 
         logger.info(f'Starting Course {self.course_name}')
+        logger.debug(f'Lessons from Course: {self.lessons}')
 
         self.output = os.path.join(self.output, self.course_name)
 

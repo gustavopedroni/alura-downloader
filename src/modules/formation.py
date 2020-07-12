@@ -29,7 +29,7 @@ class FormationDownloader:
         self.formation_name = file_folder_name(formation_name)
 
     def open_formation(self, url):
-        logger.info('Loading Page')
+        logger.info(f'Loading Page {url}')
 
         self.driver.get(url)
         time.sleep(2)
@@ -67,6 +67,7 @@ class FormationDownloader:
         self.extract_courses()
 
         logger.info(f'Starting Formation {self.formation_name}')
+        logger.debug(f'Courses from Formation: {self.courses}')
 
         self.output = os.path.join(self.output, self.formation_name)
 
@@ -82,6 +83,7 @@ class FormationDownloader:
     def download_list(self, formation_list):
 
         formation_list = os.path.abspath(formation_list)
+        logger.info(f'Starting formation list from: {formation_list}')
 
         with open(formation_list, 'r') as content_file:
             content = content_file.readlines()

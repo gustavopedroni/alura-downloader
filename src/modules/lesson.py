@@ -31,7 +31,7 @@ class LessonDownloader:
         self.lesson_name = file_folder_name(f'{lesson_index} - {lesson_name}')
 
     def open_lesson(self, url):
-        logger.info('Loading Page')
+        logger.info(f'Loading Page {url}')
 
         self.driver.get(url)
         time.sleep(2)
@@ -74,6 +74,7 @@ class LessonDownloader:
         self.extract_videos()
 
         logger.info(f'Starting Lesson {self.lesson_name}')
+        logger.debug(f'Videos from Lesson: {self.videos}')
 
         self.output = os.path.join(self.output, self.lesson_name)
 

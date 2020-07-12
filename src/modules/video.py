@@ -52,9 +52,10 @@ class VideoDownloader:
         self.video_name = file_folder_name(f'{video_index} - {video_name}')
 
     def open_video(self, url):
-        logger.info('Loading Page')
 
         if self.driver.current_url != url:
+            logger.info(f'Loading Page {url}')
+
             self.driver.get(url)
             time.sleep(2)
 
@@ -102,6 +103,10 @@ class VideoDownloader:
             except requests.exceptions.HTTPError:
                 break
 
+            except Exception as error:
+                logger.error(error)
+                break
+
         return ts_list
 
     def create_list_file(self, video_list):
@@ -147,22 +152,27 @@ class VideoDownloader:
 
     def download(self, url):
 
-        start_time = time.time()
+        try:
 
-        self.open_video(url)
+            start_time = time.time()
 
-        download_start = time.time()
-        self.download_video()
-        download_end = time.time()
+            self.open_video(url)
 
-        converting_start = time.time()
-        self.encode_video()
-        converting_end = time.time()
+            download_start = time.time()
+            self.download_video()
+            download_end = time.time()
 
-        self.clean_chunks()
+            converting_start = time.time()
+            self.encode_video()
+            converting_end = time.time()
 
-        end_time = time.time()
+            self.clean_chunks()
 
-        logger.info("Download Video in: %s seconds" % (download_end - download_start))
-        logger.info("Converted Video in: %s seconds" % (converting_end - converting_start))
-        logger.info("Downloading & Converting Video in: %s seconds" % (end_time - start_time))
+            end_time = time.time()
+
+            logger.info("Download Video in: %s seconds" % (download_end - download_start))
+            logger.info("Converted Video in: %s seconds" % (converting_end - converting_start))
+            logger.info("Downloading & Converting Video in: %s seconds" % (end_time - start_time))
+
+        except Exception as error:
+            logger.error(error)

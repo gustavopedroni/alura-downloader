@@ -13,6 +13,8 @@ parser.add_option('-c', '--course_url', help='Command course url', dest='course_
                   metavar='https://alura.com.br/.../')
 parser.add_option('-f', '--formation_url', help='Command formation url', dest='formation_url',
                   metavar='https://alura.com.br/.../')
+parser.add_option('-L', '--formation_list', help='Command formation list txt', dest='formation_list',
+                  metavar='https://alura.com.br/.../')
 parser.add_option('-o', '--output', help='Command base URL', dest='output', metavar='https://alura.com.br/.../')
 
 (options, args) = parser.parse_args()
@@ -29,5 +31,5 @@ if __name__ == '__main__':
 
         app.start(**opts)
 
-    except Exception:
+    except (Exception, KeyboardInterrupt):
         app.chrome.quit()

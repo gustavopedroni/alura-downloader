@@ -66,6 +66,8 @@ class FormationDownloader:
         self.open_formation(url)
         self.extract_courses()
 
+        logger.info(f'Starting Formation {self.formation_name}')
+
         self.output = os.path.join(self.output, self.formation_name)
 
         self.set_formation_instance()
@@ -74,5 +76,17 @@ class FormationDownloader:
             self.course.download(course_url)
 
         end_time = time.time()
-
+        logger.info(f'Formation Finished {self.formation_name}')
         logger.info("Downloading & Converting Video in: %s seconds" % (end_time - start_time))
+
+    def download_list(self, formation_list):
+
+        formation_list = os.path.abspath(formation_list)
+
+        with open(formation_list, 'r') as content_file:
+            content = content_file.readlines()
+
+        content = [i.replace('\n', '') for i in content]
+
+        for formation in content:
+            self.download(formation)

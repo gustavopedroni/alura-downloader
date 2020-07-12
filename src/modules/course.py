@@ -65,6 +65,8 @@ class CourseDownloader:
         self.open_course(url)
         self.extract_lessons()
 
+        logger.info(f'Starting Course {self.course_name}')
+
         self.output = os.path.join(self.output, self.course_name)
 
         self.set_lesson_instance()
@@ -74,4 +76,5 @@ class CourseDownloader:
 
         end_time = time.time()
 
+        logger.info(f'Course Finished {self.course_name}')
         logger.info("Downloading & Converting Video in: %s seconds" % (end_time - start_time))

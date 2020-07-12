@@ -38,8 +38,8 @@ class AluraDownloader:
             logger.info('Starting Course Download')
             self.course.download(kwargs['course_url'])
 
-        if kwargs.get('formation_url'):
-            logger.info('Starting Formation Download')
-            self.formation.download(kwargs['formation_url'])
+        if kwargs.get('formation_list'):
+            logger.info('Starting Formation List Download')
+            self.formation.download_list(kwargs['formation_list'])
 
         self.chrome.quit()

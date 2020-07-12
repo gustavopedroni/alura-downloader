@@ -55,7 +55,7 @@ class FormationDownloader:
 
         self.course = CourseDownloader(
             driver=self.driver,
-            output=self.output,
+            output=self.output_formation,
             *self.args,
             **self.kwargs
         )

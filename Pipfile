@@ -12,6 +12,7 @@ selenium-wire = "*"
 python-dotenv = "*"
 requests = "*"
 coloredlogs = "*"
+gevent = "*"
 
 [requires]
 python_version = "3.6"

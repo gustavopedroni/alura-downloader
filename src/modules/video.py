@@ -3,6 +3,7 @@ import re
 import shutil
 import time
 
+import gevent
 import requests
 
 from ..helpers.encoder import Encoder
@@ -23,12 +24,15 @@ class VideoDownloader:
         self.kwargs = kwargs
 
         self.video_name = 'undefined-video'
+        self.video_list = []
         self.list_file = ''
 
         self.tmp_folder = 'tmp'
 
         self.source_url = ''
         self.source = lambda seg: re.sub(r'seg+-\w-v1', seg, self.source_url)
+
+        self.workers = 6
 
     def wait_video_load(self, timeout=30):
 
@@ -83,56 +87,62 @@ class VideoDownloader:
         self.driver.find_element_by_class_name('vjs-play-control').click()
         logger.info('Video Paused')
 
-    def download_ts(self):
+    def download_parts(self):
 
         folder(self.tmp_folder)
         ts_folder = folder(os.path.join(self.tmp_folder, 'ts'))
 
         count = 1
 
-        logger.info(f'Starting Video: {self.video_name}')
-
-        ts_list = []
+        logger.info(f'Starting downloid video: {self.video_name}')
 
         while True:
 
-            try:
+            workers = []
 
-                logger.info(f'Downloading Part {count}')
-
-                url = self.source(f'seg-{count}-v1')
-                logger.debug(f'Downloading URL: {url}')
-
-                r = requests.get(url)
-                r.raise_for_status()
-
-                file_name = file(f'{ts_folder}/{self.video_name}-{count}.ts')
-
-                ts_list.append(file_name)
-
-                with open(file_name, 'wb') as f:
-                    f.write(r.content)
-
+            for i in range(0, self.workers):
+                workers.append(gevent.spawn(self.download_part, ts_folder, count))
                 count += 1
 
-            except requests.exceptions.HTTPError:
+            gevent.joinall(workers)
+
+            works = [i.value for i in workers if i.value]
+
+            if len(works) != self.workers:
                 break
 
-            except Exception as error:
-                logger.error(error)
-                break
+    def download_part(self, ts_folder, count):
 
-        return ts_list
+        try:
+            url = self.source(f'seg-{count}-v1')
 
-    def create_list_file(self, video_list):
+            logger.info(f'Downloading Part {count}')
+            logger.debug(f'Downloading URL: {url}')
+
+            r = requests.get(url)
+            r.raise_for_status()
+
+            file_name = file(f'{ts_folder}/{self.video_name}-{count}.ts')
+
+            with open(file_name, 'wb') as f:
+                f.write(r.content)
+
+            self.video_list.append(file_name)
+
+            return True
+
+        except requests.exceptions.HTTPError as e:
+            return False
+
+    def create_list_file(self):
 
         list_name = f'{self.tmp_folder}/list.txt'
 
         with open(list_name, 'wb') as f:
-            for i in video_list:
+            for i in self.video_list:
                 f.write(f"file '{os.path.abspath(i)}'\n".encode())
 
-        return list_name
+        self.list_file = list_name
 
     def check_output_folder(self):
 
@@ -162,8 +172,10 @@ class VideoDownloader:
 
     def download_video(self):
 
-        ts_list = self.download_ts()
-        self.list_file = self.create_list_file(ts_list)
+        self.video_list = []
+
+        self.download_parts()
+        self.create_list_file()
 
     def download(self, url):
 

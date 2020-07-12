@@ -1,5 +1,4 @@
 import optparse
-
 from dotenv import load_dotenv
 from src.alura import AluraDownloader
 

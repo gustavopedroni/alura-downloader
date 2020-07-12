@@ -189,7 +189,6 @@ class VideoDownloader:
 
         loop = asyncio.get_event_loop()
         loop.run_until_complete(asyncio.wait(futures))
-        loop.close()
 
         self.create_list_file()
 

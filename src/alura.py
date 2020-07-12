@@ -1,5 +1,3 @@
-from gevent import monkey; monkey.patch_all(httplib=True)
-
 from src.drivers import get_chrome
 from .helpers.logging import get_logger
 from .modules.auth import AluraAuth
@@ -32,15 +30,19 @@ class AluraDownloader:
             self.logger.info('Starting Video Download')
             self.video.download(kwargs['video_url'])
 
-        if kwargs.get('lesson_url'):
+        elif kwargs.get('lesson_url'):
             self.logger.info('Starting Lesson Download')
             self.lesson.download(kwargs['lesson_url'])
 
-        if kwargs.get('course_url'):
+        elif kwargs.get('course_url'):
             self.logger.info('Starting Course Download')
             self.course.download(kwargs['course_url'])
 
-        if kwargs.get('formation_list'):
+        elif kwargs.get('formation_url'):
+            self.logger.info('Starting Formation Download')
+            self.formation.download(kwargs['formation_url'])
+
+        elif kwargs.get('formation_list'):
             self.logger.info('Starting Formation List Download')
             self.formation.download_list(kwargs['formation_list'])
 

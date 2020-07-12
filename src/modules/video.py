@@ -1,10 +1,10 @@
+import asyncio
 import os
 import re
 import shutil
 import time
 
-import gevent
-import requests
+import aiohttp
 
 from ..helpers.encoder import Encoder
 from ..helpers.logging import get_logger
@@ -32,7 +32,7 @@ class VideoDownloader:
         self.source_url = ''
         self.source = lambda seg: re.sub(r'seg+-\w-v1', seg, self.source_url)
 
-        self.workers = 6
+        self.io_workers = 10
 
     def wait_video_load(self, timeout=30):
 
@@ -87,59 +87,70 @@ class VideoDownloader:
         self.driver.find_element_by_class_name('vjs-play-control').click()
         logger.info('Video Paused')
 
-    def download_parts(self):
+    @staticmethod
+    async def fetch(session, url):
+        async with session.get(url) as response:
+            if response.status == 200:
+                return await response.read()
+            return None
+
+    async def download_parts(self):
 
         folder(self.tmp_folder)
         ts_folder = folder(os.path.join(self.tmp_folder, 'ts'))
 
         count = 1
 
-        logger.info(f'Starting downloid video: {self.video_name}')
+        logger.info(f'Starting download video: {self.video_name}')
 
-        while True:
+        async with aiohttp.ClientSession() as session:
 
-            workers = []
+            while True:
 
-            for i in range(0, self.workers):
-                workers.append(gevent.spawn(self.download_part, ts_folder, count))
-                count += 1
+                tasks = []
 
-            gevent.joinall(workers)
+                for i in range(self.io_workers):
+                    task = asyncio.ensure_future(self.download_part(session, ts_folder, count))
+                    tasks.append(task)
+                    count += 1
 
-            works = [i.value for i in workers if i.value]
+                responses = await asyncio.gather(*tasks)
 
-            if len(works) != self.workers:
-                break
+                works = [i for i in responses if i]
 
-    def download_part(self, ts_folder, count):
+                if len(works) != self.io_workers:
+                    break
 
-        try:
-            url = self.source(f'seg-{count}-v1')
+    async def download_part(self, session, ts_folder, count):
 
-            logger.info(f'Downloading Part {count}')
-            logger.debug(f'Downloading URL: {url}')
+        url = self.source(f'seg-{count}-v1')
 
-            r = requests.get(url)
-            r.raise_for_status()
+        logger.info(f'Downloading Part {count}')
+        logger.debug(f'Downloading URL: {url}')
 
-            file_name = file(f'{ts_folder}/{self.video_name}-{count}.ts')
-
-            with open(file_name, 'wb') as f:
-                f.write(r.content)
-
-            self.video_list.append(file_name)
-
-            return True
-
-        except requests.exceptions.HTTPError as e:
+        response = await self.fetch(session, url)
+        if not response:
             return False
+
+        file_name = file(f'{ts_folder}/{self.video_name}-{count}.ts')
+
+        with open(file_name, 'wb') as f:
+            f.write(response)
+
+        self.video_list.append({
+            'count': count,
+            'name': file_name,
+        })
+
+        return True
 
     def create_list_file(self):
 
+        video_list = [i['name'] for i in sorted(self.video_list, key=lambda k: k['count'])]
         list_name = f'{self.tmp_folder}/list.txt'
 
         with open(list_name, 'wb') as f:
-            for i in self.video_list:
+            for i in video_list:
                 f.write(f"file '{os.path.abspath(i)}'\n".encode())
 
         self.list_file = list_name
@@ -174,7 +185,12 @@ class VideoDownloader:
 
         self.video_list = []
 
-        self.download_parts()
+        futures = [self.download_parts()]
+
+        loop = asyncio.get_event_loop()
+        loop.run_until_complete(asyncio.wait(futures))
+        loop.close()
+
         self.create_list_file()
 
     def download(self, url):

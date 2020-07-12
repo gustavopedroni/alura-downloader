@@ -10,9 +10,8 @@ ipython = "==5.10.0"
 selenium = "*"
 selenium-wire = "*"
 python-dotenv = "*"
-requests = "*"
 coloredlogs = "*"
-gevent = "*"
+aiohttp = "*"
 
 [requires]
 python_version = "3.6"

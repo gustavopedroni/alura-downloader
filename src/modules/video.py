@@ -30,6 +30,20 @@ class VideoDownloader:
         self.source_url = ''
         self.source = lambda seg: re.sub(r'seg+-\w-v1', seg, self.source_url)
 
+    def wait_video_load(self, timeout=30):
+
+        start = time.time()
+
+        while time.time() - start < timeout:
+
+            try:
+
+                self.driver.find_element_by_class_name('vjs-big-play-button')
+                break
+
+            except Exception:
+                time.sleep(0.2)
+
     def wait_video_start(self, timeout=30):
 
         start = time.time()
@@ -61,6 +75,7 @@ class VideoDownloader:
 
         self.set_video_details()
 
+        self.wait_video_load()
         self.driver.find_element_by_class_name('vjs-big-play-button').click()
         logger.info('Waiting Video Start')
         self.wait_video_start()

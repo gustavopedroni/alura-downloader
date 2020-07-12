@@ -1,6 +1,7 @@
 from src.drivers import get_chrome
 from .helpers.logging import get_logger
 from .modules.auth import AluraAuth
+from .modules.course import CourseDownloader
 from .modules.lesson import LessonDownloader
 from .modules.video import VideoDownloader
 
@@ -17,8 +18,9 @@ class AluraDownloader:
         self.auth = AluraAuth(driver=self.chrome, *args, **kwargs)
         self.video = VideoDownloader(driver=self.chrome, *args, **kwargs)
         self.lesson = LessonDownloader(driver=self.chrome, *args, **kwargs)
+        self.course = CourseDownloader(driver=self.chrome, *args, **kwargs)
 
-    def start(self, lesson_url=None, video_url=None, *args, **kwargs):
+    def start(self, course_url=None, lesson_url=None, video_url=None, *args, **kwargs):
 
         self.auth.login()
 
@@ -29,5 +31,9 @@ class AluraDownloader:
         if lesson_url:
             logger.info('Starting Lesson Download')
             self.lesson.download(lesson_url)
+
+        if course_url:
+            logger.info('Starting Course Download')
+            self.course.download(course_url)
 
         self.chrome.quit()

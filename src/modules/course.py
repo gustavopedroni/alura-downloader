@@ -13,6 +13,7 @@ class CourseDownloader:
     def __init__(self, output, driver, *args, **kwargs):
         self.driver = driver
         self.output = output if output else 'dist'
+        self.output_course = ''
 
         self.args = args
         self.kwargs = kwargs
@@ -53,7 +54,7 @@ class CourseDownloader:
 
         self.lesson = LessonDownloader(
             driver=self.driver,
-            output=self.output,
+            output=self.output_course,
             *self.args,
             **self.kwargs
         )
@@ -68,7 +69,7 @@ class CourseDownloader:
         logger.info(f'Starting Course {self.course_name}')
         logger.debug(f'Lessons from Course: {self.lessons}')
 
-        self.output = os.path.join(self.output, self.course_name)
+        self.output_course = os.path.join(self.output, self.course_name)
 
         self.set_lesson_instance()
 

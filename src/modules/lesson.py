@@ -13,6 +13,7 @@ class LessonDownloader:
     def __init__(self, output, driver, *args, **kwargs):
         self.driver = driver
         self.output = output if output else 'dist'
+        self.output_lesson = ''
 
         self.args = args
         self.kwargs = kwargs
@@ -61,7 +62,7 @@ class LessonDownloader:
 
         self.video = VideoDownloader(
             driver=self.driver,
-            output=self.output,
+            output=self.output_lesson,
             *self.args,
             **self.kwargs
         )
@@ -76,7 +77,7 @@ class LessonDownloader:
         logger.info(f'Starting Lesson {self.lesson_name}')
         logger.debug(f'Videos from Lesson: {self.videos}')
 
-        self.output = os.path.join(self.output, self.lesson_name)
+        self.output_lesson = os.path.join(self.output, self.lesson_name)
 
         self.set_video_instance()
 

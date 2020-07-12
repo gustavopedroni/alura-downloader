@@ -13,6 +13,7 @@ class FormationDownloader:
     def __init__(self, output, driver, *args, **kwargs):
         self.driver = driver
         self.output = output if output else 'dist'
+        self.output_formation = ''
 
         self.args = args
         self.kwargs = kwargs
@@ -69,7 +70,7 @@ class FormationDownloader:
         logger.info(f'Starting Formation {self.formation_name}')
         logger.debug(f'Courses from Formation: {self.courses}')
 
-        self.output = os.path.join(self.output, self.formation_name)
+        self.output_formation = os.path.join(self.output, self.formation_name)
 
         self.set_formation_instance()
 

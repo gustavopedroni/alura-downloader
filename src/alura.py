@@ -54,3 +54,10 @@ class AluraDownloader:
 
         for url in self.errors:
             logger.error(f'Error in URL: {url}')
+
+    def register_errors(self):
+
+        if len(self.errors):
+
+            lines = [f'{i}\n' for i in self.errors]
+            open('errors.txt', 'w').writelines(lines)

@@ -35,7 +35,7 @@ class VideoDownloader(BaseModule):
         self.source_url = ''
         self.source = lambda seg: re.sub(r'seg+-\w-v1', seg, self.source_url)
 
-        self.io_workers = 10
+        self.io_workers = 15
 
     def wait_video_load(self, timeout=30):
 
@@ -231,4 +231,4 @@ class VideoDownloader(BaseModule):
         except Exception as error:
             logger.error(error)
 
-            self.register_error(url)
+            self.register_error(url, self.output)

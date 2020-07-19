@@ -35,4 +35,3 @@ if __name__ == '__main__':
 
     finally:
         app.show_errors()
-        app.register_errors()

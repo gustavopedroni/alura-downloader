@@ -50,3 +50,102 @@
 
    $ python main.py -v https://cursos.alura.com.br/course/linux-ubuntu/task/3216
 ```
+
+## All Formations
+
+### Mobile
+- Android
+- iOS
+- Testes automatizados no Android
+- Multiplataforma mobile Xamarin
+- Arquitetura Android
+- Flutter
+
+### Programação:
+- Java
+- .NET
+- Jogos com Unity
+- PHP
+- Wordpress
+- Iniciante em Programação
+- Certificação Java
+- Ruby On Rails
+- Expert em Orientação a Objetos
+- Certificação C# Programming
+- Integração de Aplicações Java
+- Java EE
+- VB.NET
+- Clojure
+- Node.JS
+- Python
+- Django
+
+### Front-end:
+- Acessibilidade Web
+- Angular
+- Vue.js
+- HTML e CSS
+- React JS
+- Front End
+
+### Infraestrutura:
+- Administrador de Redes
+- Segurança de aplicações
+- Raspberry Pi
+- Internet das Coisas
+- Amazon Web Services
+- Certificação LPI Linux Essentials
+- Microcontroladores e Eletrônica Aplicada
+- DevOps
+- Apache Kafka
+- Certificação Docker DCA
+
+### Design & UX:
+- UX Design
+- Motion Design
+- Design Gráfico
+- Editor de vídeo
+- Unreal Engine
+- Produção com Photoshop
+- Produção Gráfica com Illustrator
+- Adobe XD
+- Pintura Digital no Photoshop
+- Desenho humano no Photoshop
+- Ilustração Publicitária no Photoshop
+- InDesign
+- Sketch
+- Produção de vídeo no Premiere
+- UX Research
+- ZBrush
+- Figma
+
+### Data Science:
+- Data Science
+- Machine Learning
+- SQL com Microsoft SQL Server 2017
+- BI e Data Warehouse com Pentaho
+- BI e Data Warehouse com SQL Server e Power BI
+- SQL com MySQL Server da Oracle
+- SQL com Oracle Database
+- Python para Data Science
+- Matemática para Programação e Data Science
+- Datomic
+- Power BI
+
+### Marketing Digital:
+- Marketing Digital
+- SEO
+- Social Media
+
+### Inovação & Gestão:
+- Gerente Ágil
+- Business Agility
+- Desenvolvimento Pessoal
+- Currículos
+- Empreendedorismo Digital
+- E-commerce
+- Certificação ITIL Foundation
+- Certificação Cobit 5
+- Certificação PMP e CAPM do PMI
+- Digital & Agile Thinking
+- Comunicação

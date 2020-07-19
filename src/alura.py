@@ -2,9 +2,9 @@ from src.drivers import get_chrome
 from .helpers.logging import get_logger
 from .modules.auth import AluraAuth
 from .modules.course import CourseDownloader
+from .modules.formation import FormationDownloader
 from .modules.lesson import LessonDownloader
 from .modules.video import VideoDownloader
-from .modules.formation import FormationDownloader
 
 logger = get_logger('Alura Manager')
 
@@ -52,12 +52,11 @@ class AluraDownloader:
 
     def show_errors(self):
 
-        for url in self.errors:
-            logger.error(f'Error in URL: {url}')
+        for error in self.errors:
+            logger.error(f'Error in URL: {error["url"]}')
 
     def register_errors(self):
 
         if len(self.errors):
-
             lines = [f'{i}\n' for i in self.errors]
             open('errors.txt', 'w').writelines(lines)

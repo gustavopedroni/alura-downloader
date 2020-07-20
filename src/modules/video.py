@@ -33,7 +33,7 @@ class VideoDownloader(BaseModule):
         self.tmp_folder = 'tmp'
 
         self.source_url = ''
-        self.source = lambda seg: re.sub(r'seg+-\w-v1', seg, self.source_url)
+        self.source = lambda seg: re.sub(r'seg+-\w+-v1', seg, self.source_url)
 
         self.io_workers = 15
 
@@ -64,7 +64,7 @@ class VideoDownloader(BaseModule):
 
         return False
 
-    def wait_video_start(self, timeout=30):
+    def wait_video_start(self, timeout=60):
 
         start = time.time()
 
@@ -76,6 +76,8 @@ class VideoDownloader(BaseModule):
                 break
 
             else:
+                if request:
+                    print(request.path)
                 time.sleep(0.2)
 
     def set_video_details(self):

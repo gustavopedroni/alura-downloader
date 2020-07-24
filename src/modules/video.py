@@ -76,8 +76,6 @@ class VideoDownloader(BaseModule):
                 break
 
             else:
-                if request:
-                    print(request.path)
                 time.sleep(0.2)
 
     def set_video_details(self):

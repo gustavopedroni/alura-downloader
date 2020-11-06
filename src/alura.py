@@ -14,7 +14,7 @@ class AluraDownloader:
     def __init__(self, *args, **kwargs):
 
         self.chrome = get_chrome()
-        self.chrome.scopes = ['.*cdn12.*']
+        self.chrome.scopes = ['.*alura.com.br.*']
 
         self.errors = []
 

@@ -7,4 +7,4 @@ def file_folder_name(t):
             .replace('"', "'") \
             .replace('<', ' ') \
             .replace('>', ' ') \
-            .replace('|', '-') \
+            .replace('|', '-')

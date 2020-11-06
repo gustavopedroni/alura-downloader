@@ -5,6 +5,9 @@ from .video import VideoDownloader
 from ..helpers.logging import get_logger
 from ..helpers.text import file_folder_name
 
+from selenium.webdriver.support.ui import Select
+
+
 logger = get_logger('Lesson')
 
 
@@ -25,11 +28,9 @@ class LessonDownloader:
 
     def set_lesson_details(self):
 
-        lesson_name = self.driver.find_element_by_class_name('task-menu-section-title-text').text
-        lesson_index = self.driver.find_element_by_class_name('task-menu-section-title-number') \
-            .find_element_by_tag_name('strong').text
+        lesson_name = Select(self.driver.find_element_by_class_name('task-menu-sections-select')).first_selected_option.text
 
-        self.lesson_name = file_folder_name(f'{lesson_index} - {lesson_name}')
+        self.lesson_name = lesson_name
 
     def open_lesson(self, url):
         logger.info(f'Loading Page {url}')

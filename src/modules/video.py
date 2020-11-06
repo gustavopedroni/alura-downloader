@@ -71,8 +71,8 @@ class VideoDownloader(BaseModule):
         while time.time() - start < timeout:
             request = self.driver.last_request
 
-            if request is not None and request.path.find('.ts') > 0 and self.different_video(request.path):
-                self.source_url = request.path
+            if request is not None and request.url.find('.ts') > 0 and self.different_video(request.url):
+                self.source_url = request.url
                 break
 
             else:
@@ -181,7 +181,7 @@ class VideoDownloader(BaseModule):
 
         self.check_output_folder()
 
-        output = f'{self.output}/{self.video_name}'
+        output = os.path.abspath(f'{self.output}/{self.video_name}')
         Encoder().ts_to_mp4(self.list_file, output)
 
     def clean_chunks(self):

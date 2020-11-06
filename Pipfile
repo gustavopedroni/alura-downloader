@@ -12,6 +12,8 @@ selenium-wire = "*"
 python-dotenv = "*"
 coloredlogs = "*"
 aiohttp = "*"
+webdriver-manager = "*"
+ipython = "==5.10.0"
 
 [requires]
 python_version = "3.6"

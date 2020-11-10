@@ -226,7 +226,7 @@ class VideoDownloader(BaseModule):
 
             logger.info("Download Video in: %s seconds" % (download_end - download_start))
             logger.info("Converted Video in: %s seconds" % (converting_end - converting_start))
-            logger.info("Downloading & Converting Video in: %s seconds" % (end_time - start_time))
+            logger.info("All time in: %s seconds" % (end_time - start_time))
 
         except Exception as error:
             logger.error(error)

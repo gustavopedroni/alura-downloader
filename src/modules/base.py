@@ -15,5 +15,5 @@ class BaseModule(object):
         })
 
         if len(self.alura.errors):
-            lines = [f'python main.py -o {e["path"]} -v {e["url"]}\n' for e in self.alura.errors]
+            lines = [f'python main.py -o "{e["path"]}" -v {e["url"]}\n' for e in self.alura.errors]
             open('errors.txt', 'w').writelines(lines)

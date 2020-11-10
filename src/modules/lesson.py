@@ -30,7 +30,7 @@ class LessonDownloader:
 
         lesson_name = Select(self.driver.find_element_by_class_name('task-menu-sections-select')).first_selected_option.text
 
-        self.lesson_name = lesson_name
+        self.lesson_name = file_folder_name(lesson_name)
 
     def open_lesson(self, url):
         logger.info(f'Loading Page {url}')

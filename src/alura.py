@@ -13,42 +13,48 @@ class AluraDownloader:
 
     def __init__(self, *args, **kwargs):
 
-        self.chrome = get_chrome()
-        self.chrome.scopes = ['.*alura.com.br.*']
-
         self.errors = []
+        self.driver = get_chrome()
+        self.driver.scopes = ['.*alura.com.br.*']
 
-        self.auth = AluraAuth(alura=self, driver=self.chrome, *args, **kwargs)
-        self.video = VideoDownloader(alura=self, driver=self.chrome, *args, **kwargs)
-        self.lesson = LessonDownloader(alura=self, driver=self.chrome, *args, **kwargs)
-        self.course = CourseDownloader(alura=self, driver=self.chrome, *args, **kwargs)
-        self.formation = FormationDownloader(alura=self, driver=self.chrome, *args, **kwargs)
+        self.auth = AluraAuth(alura=self, driver=self.driver, *args, **kwargs)
+        self.video = VideoDownloader(alura=self, driver=self.driver, *args, **kwargs)
+        self.lesson = LessonDownloader(alura=self, driver=self.driver, *args, **kwargs)
+        self.course = CourseDownloader(alura=self, driver=self.driver, *args, **kwargs)
+        self.formation = FormationDownloader(alura=self, driver=self.driver, *args, **kwargs)
 
     def start(self, **kwargs):
 
-        self.auth.login()
-
         if kwargs.get('video_url'):
             logger.info('Starting Video Download')
-            self.video.download(kwargs['video_url'])
+            download = self.video.download
+            kw = kwargs['video_url']
 
         elif kwargs.get('lesson_url'):
             logger.info('Starting Lesson Download')
-            self.lesson.download(kwargs['lesson_url'])
+            download = self.lesson.download
+            kw = kwargs['lesson_url']
 
         elif kwargs.get('course_url'):
             logger.info('Starting Course Download')
-            self.course.download(kwargs['course_url'])
+            download = self.course.download
+            kw = kwargs['course_url']
 
         elif kwargs.get('formation_url'):
             logger.info('Starting Formation Download')
-            self.formation.download(kwargs['formation_url'])
+            download = self.formation.download
+            kw = kwargs['formation_url']
 
         elif kwargs.get('formation_list'):
             logger.info('Starting Formation List Download')
-            self.formation.download_list(kwargs['formation_list'])
+            download = self.formation.download_list
+            kw = kwargs['formation_list']
 
-        self.chrome.quit()
+        if download:
+            self.auth.login()
+            download(kw)           
+
+        self.driver.quit()
 
     def show_errors(self):
 

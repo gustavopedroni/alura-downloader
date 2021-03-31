@@ -14,6 +14,7 @@ coloredlogs = "*"
 aiohttp = "*"
 webdriver-manager = "*"
 ipython = "==5.10.0"
+click = "*"
 
 [requires]
 python_version = "3.6"

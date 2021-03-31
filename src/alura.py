@@ -1,3 +1,5 @@
+import traceback
+
 from src.drivers import get_chrome
 from .helpers.logging import get_logger
 from .modules.auth import AluraAuth
@@ -5,6 +7,7 @@ from .modules.course import CourseDownloader
 from .modules.formation import FormationDownloader
 from .modules.lesson import LessonDownloader
 from .modules.video import VideoDownloader
+from .types import *
 
 logger = get_logger('Alura Manager')
 
@@ -17,44 +20,57 @@ class AluraDownloader:
         self.driver = get_chrome()
         self.driver.scopes = ['.*alura.com.br.*']
 
+        self.args = args
+        self.kwargs = kwargs
+
         self.auth = AluraAuth(alura=self, driver=self.driver, *args, **kwargs)
-        self.video = VideoDownloader(alura=self, driver=self.driver, *args, **kwargs)
         self.lesson = LessonDownloader(alura=self, driver=self.driver, *args, **kwargs)
         self.course = CourseDownloader(alura=self, driver=self.driver, *args, **kwargs)
         self.formation = FormationDownloader(alura=self, driver=self.driver, *args, **kwargs)
 
-    def start(self, **kwargs):
+    def start(self, url, stype=None):
 
-        if kwargs.get('video_url'):
+        if not stype and not url:
+            pass
+
+        stype = stype()
+        downloader = None
+
+        if isinstance(stype, VideoType):
             logger.info('Starting Video Download')
-            download = self.video.download
-            kw = kwargs['video_url']
+            downloader = VideoDownloader(alura=self, driver=self.driver, *self.args, **self.kwargs)
 
-        elif kwargs.get('lesson_url'):
+        elif isinstance(stype, LessionType):
             logger.info('Starting Lesson Download')
-            download = self.lesson.download
-            kw = kwargs['lesson_url']
+            downloader = LessonDownloader(alura=self, driver=self.driver, *self.args, **self.kwargs)
 
-        elif kwargs.get('course_url'):
+        elif isinstance(stype, CourseType):
             logger.info('Starting Course Download')
-            download = self.course.download
-            kw = kwargs['course_url']
+            downloader = CourseDownloader(alura=self, driver=self.driver, *self.args, **self.kwargs)
 
-        elif kwargs.get('formation_url'):
+        elif isinstance(stype, (FormationType, FormationListType)):
             logger.info('Starting Formation Download')
-            download = self.formation.download
-            kw = kwargs['formation_url']
+            downloader = FormationDownloader(alura=self, driver=self.driver, *self.args, **self.kwargs)
 
-        elif kwargs.get('formation_list'):
-            logger.info('Starting Formation List Download')
-            download = self.formation.download_list
-            kw = kwargs['formation_list']
+        if downloader:
 
-        if download:
-            self.auth.login()
-            download(kw)           
+            try:
+                self.auth.login()
 
-        self.driver.quit()
+                if isinstance(stype, FormationListType):
+                    downloader.download_list(url)
+                else:
+                    downloader.download(url)
+
+            except Exception as error:
+                logger.exception(error)
+
+            except KeyboardInterrupt:
+                pass
+
+            finally:
+                self.driver.quit()
+                self.show_errors()
 
     def show_errors(self):
 

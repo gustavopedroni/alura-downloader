@@ -4,7 +4,6 @@
  - Python 3.6
  - [Pipenv](https://github.com/pypa/pipenv)
  - [FFmpeg](https://ffmpeg.org/download.html) 4.3
- - [Chromium Driver](https://chromedriver.storage.googleapis.com/index.html?path=83.0.4103.39/)
 
 ### Installing
 
@@ -12,7 +11,6 @@
 
  - Install Virtualenv ```pipenv install```
  - Create a ```.env``` file and define the following variables: 
-    - ```CHROMIUM_DRIVER``` - Localization of chrome driver
     - ```ALURA_USER``` - Alura username or email
     - ```ALURA_PASS``` - Alura password
  

@@ -5,13 +5,13 @@ ENV LC_ALL C.UTF-8
 ENV PYTHONDONTWRITEBYTECODE 1
 ENV PYTHONFAULTHANDLER 1
 
-RUN apk add --no-cache gcc g++ libffi-dev libressl-dev musl-dev python3-dev openssl-dev cargo ffmpeg
+RUN apk add --no-cache gcc g++ libffi-dev libressl-dev musl-dev python3-dev openssl-dev cargo ffmpeg chromium chromium-chromedriver
 RUN pip install pipenv
 
 COPY . /app
 
 WORKDIR /app
 
-RUN pipenv install --deploy --system --ignore-pipfile
+RUN pipenv install --deploy --system
 
-CMD ["python", "main.py"] 
+ENTRYPOINT ["python", "main.py"] 

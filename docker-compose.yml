@@ -1,0 +1,12 @@
+version: '3.4'
+
+services:
+  alura:
+    build: .
+    entrypoint: ["python", "main.py"]
+    volumes:
+      - .:/app
+    environment:
+      DOCKER_ENV: 'true'
+    env_file:
+      - ./.env

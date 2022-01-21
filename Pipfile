@@ -12,7 +12,7 @@ python-dotenv = "*"
 coloredlogs = "*"
 aiohttp = ">=3.7.4"
 webdriver-manager = "*"
-ipython = "==5.10.0"
+ipython = "==7.16.3"
 click = "*"
 
 [requires]
